@@ -11,17 +11,17 @@ prepare: |
     fi
 
 execute: |
-    CONNECTED_PATTERN=':home +home-consumer'
+    CONNECTED_PATTERN='(?s):home.+home-consumer'
 
     echo "The plug can be connected to a matching slot of OS snap without snap:slot argument"
     snap connect home-consumer:home
-    snap interfaces | MATCH "$CONNECTED_PATTERN"
+    snap interfaces -i home| grep -Pzq "$CONNECTED_PATTERN"
 
     snap disconnect home-consumer:home
 
     echo "The plug can be connected to a matching slot with slot name omitted"
-    snap connect home-consumer:home
-    snap interfaces | MATCH "$CONNECTED_PATTERN"
+    snap connect home-consumer
+    snap interfaces -i home| grep -Pzq "$CONNECTED_PATTERN"
 
     snap disconnect home-consumer:home
     snap tasks --last=disconnect| MATCH "Disconnect .* from core:home"
@@ -29,7 +29,7 @@ execute: |
     echo "The plug can be connected to a slot on the core snap using abbreviated syntax"
     snap connect home-consumer:home :home
 
-    snap interfaces | MATCH "$CONNECTED_PATTERN"
+    snap interfaces -i home| grep -Pzq "$CONNECTED_PATTERN"
 
     snap tasks --last=connect| MATCH "Connect home-consumer:home to core:home"
 
